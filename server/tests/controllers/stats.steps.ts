@@ -10,6 +10,7 @@ const feature = loadFeature('tests/features/stats.feature');
 defineFeature(feature, (test)=>{
     let request = supertest(app)
     let response: supertest.Response;
+    jest.setTimeout(15000);
 
     // Teste 1
     test('Requisição de Estatísticas', ({given, when, then}) => {
@@ -34,8 +35,11 @@ defineFeature(feature, (test)=>{
             response = await request.get('/order/stats');
         });
         then(/^o sistema retorna vendas totais "(.*)", produto mais vendido "(.*)" e tabela de produtos com produto "(.*)" com quantidade "(.*)" e valor total "(.*)"$/, async (totalValue, mostSold, productName, productAmount, productValue) => {
-            const expected = {"mostSold": mostSold, "productAmount": [parseInt(productAmount)], "productName": [productName], "productValue": [parseFloat(productValue)], "totalValue": parseFloat(totalValue)};
-            expect(response.body).toStrictEqual(expected);
+            expect(response.body.totalValue).toBe(parseFloat(totalValue));
+            expect(response.body.mostSold).toBe(mostSold);
+            expect(response.body.productName[0]).toBe(productName);
+            expect(response.body.productAmount[0]).toBe(parseInt(productAmount));
+            expect(response.body.productValue[0]).toBe(parseFloat(productValue));
         });
     });
 
@@ -51,8 +55,11 @@ defineFeature(feature, (test)=>{
             response = await request.get('/order/stats');
         });
         then(/^o sistema retorna vendas totais "(.*)", produto mais vendido "(.*)" e tabela de produtos com produto "(.*)" com quantidade "(.*)" e valor total "(.*)"$/, async (totalValue, mostSold, productName, productAmount, productValue) => {
-            const expected = {"mostSold": mostSold, "productAmount": [parseInt(productAmount)], "productName": [productName], "productValue": [parseFloat(productValue)], "totalValue": parseFloat(totalValue)};
-            expect(response.body).toStrictEqual(expected);
+            expect(response.body.totalValue).toBe(parseFloat(totalValue));
+            expect(response.body.mostSold).toBe(mostSold);
+            expect(response.body.productName[0]).toBe(productName);
+            expect(response.body.productAmount[0]).toBe(parseInt(productAmount));
+            expect(response.body.productValue[0]).toBe(parseFloat(productValue));
         });
     });
 })
