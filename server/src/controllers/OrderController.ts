@@ -71,12 +71,24 @@ class OrderController{
     //GET STATS METHOD
     async getStats(req: Request, res: Response, next: NextFunction) {
         try {
+            const { year, month } = req.query;
+
             // Get all products or paid orders
             const allOrders = await firestoreDB.collection('orders').where("status", "==", "Pago").get();
-            const orders = allOrders.docs.map(doc => ({
+            const ordersRaw = allOrders.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
+            
+            const orders = ordersRaw.map(element => {
+                const orderVar = Order.parse(element);
+                const compare = orderVar.date.split('-');
+                if((compare[0] === year && compare[1] === month) || year === "0000") {
+                    return orderVar;
+                }
+                return null;
+            }).filter(order => order != null);
+
             // Establish stats to be sent
             var totalValue = 0;
             var mostSold = 'none';
